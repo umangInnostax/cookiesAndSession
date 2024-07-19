@@ -1,0 +1,31 @@
+table{
+    margin: 5px;
+}
+th{
+    border: 1px solid black;
+}
+td{
+    border: 1px solid black;
+}
+
+.button{
+    background-color: #0000ffb8;
+    width: fit-content;
+    color: white;
+    font-size: 20px;
+    display: flex;
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button:hover{
+    background-color: blue;
+    box-shadow: rgba(0, 0, 255, 0.4) 5px 5px, rgba(0, 0, 255, 0.3) 10px 10px, rgba(0, 0, 255, 0.2) 15px 15px, rgba(0, 0, 255, 0.1) 20px 20px, rgba(0, 0, 255, 0.05) 25px 25px;
+}
+
+.button:focus{
+    background-color: white;
+    color: blue;
+}
