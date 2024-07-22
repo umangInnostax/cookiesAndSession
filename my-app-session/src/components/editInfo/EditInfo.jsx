@@ -31,10 +31,9 @@ export function EditInfo(){
                 },
                 credentials: 'include'
               })
-                 .then(response => response.text())
-                 .then((text) => {
-                    console.log(text);
-                    if(text.match("SUCCESS")){
+                 .then(response => response.json())
+                 .then((json) => {
+                    if(json.status === "SUCCESS"){
                         alert("Data Edited successfully");
                         const users = JSON.parse(sessionStorage.getItem('users'));
                         const editedUsers = users.map((user)=>{

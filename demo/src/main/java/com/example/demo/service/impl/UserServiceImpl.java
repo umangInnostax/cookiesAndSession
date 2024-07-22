@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.example.demo.RequestDto.EditUserInfoRequestDto;
+import com.example.demo.RequestDto.SaveUserInfoRequestDto;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.enums.ActivityStatus;
 import com.example.demo.handlers.WebResponse;
@@ -80,6 +82,105 @@ public class UserServiceImpl implements UserService {
             webResponse.setStatus(ActivityStatus.ERROR);
             webResponse.setMessage("Information of user not found");
             webResponse.setError(e.getMessage());
+
+            return webResponse;
+        }
+    }
+
+    @Override
+    public WebResponse addUserInfo(SaveUserInfoRequestDto request) {
+        WebResponse webResponse = new WebResponse();
+         try{
+            if(request.getAddress()=="" || request.getMobileNo()=="" || request.getName()=="" || request.getPosition()==""){
+                webResponse.setError("Incomplete information");
+                webResponse.setMessage("User information can not be added");
+                webResponse.setStatus(ActivityStatus.FAILED);
+                return webResponse;
+            }
+
+            UserEntity practiceEntity = modelMapper.map(request, UserEntity.class);
+            UserEntity userEntity =  userRepository.save(practiceEntity);
+            GetUserInfoResponseDto responseDto = modelMapper.map(userEntity, GetUserInfoResponseDto.class);
+
+            webResponse.setError("No error found");
+            webResponse.setMessage("User Information is added");
+            webResponse.setResponse(responseDto);
+            webResponse.setStatus(ActivityStatus.SUCCESS);
+
+            return webResponse;
+        } catch(Exception e){
+
+            webResponse.setError(e.getMessage());
+            webResponse.setMessage("User Information is not added");
+            webResponse.setStatus(ActivityStatus.ERROR);
+            return null;
+        }
+    }
+
+    @Override
+    public WebResponse deleteUser(Long id) {
+        WebResponse webResponse = new WebResponse();
+        try{
+            if(userRepository.findById(id).isEmpty()){
+                webResponse.setError("User does not exist with id: "+id);
+                webResponse.setMessage("Failed to delete the information");
+                webResponse.setStatus(ActivityStatus.FAILED);
+                return webResponse;
+            }
+            webResponse.setResponse(userRepository.findById(id));
+            userRepository.deleteById(id);
+
+            webResponse.setError("No error found");
+            webResponse.setMessage("User information is deleted");
+            webResponse.setStatus(ActivityStatus.SUCCESS);
+
+            return webResponse;
+        } catch(Exception e){
+            System.out.println(e.getMessage());
+
+            webResponse.setError(e.getMessage());
+            webResponse.setMessage("Failed to delete the information");
+            webResponse.setStatus(ActivityStatus.SUCCESS);
+
+            return webResponse;
+        }
+    }
+
+    @Override
+    public WebResponse editUserInfoByUserId(Long id, EditUserInfoRequestDto request) {
+        WebResponse webResponse = new WebResponse();
+        webResponse.setResponse(request);
+        try{
+            if(userRepository.findById(id).isEmpty()){
+                webResponse.setError("User does not exist with id: "+id);
+                webResponse.setMessage("Failed to edit the information");
+                webResponse.setStatus(ActivityStatus.FAILED);
+                return webResponse;
+            }
+            
+            if(request.getAddress()=="" || request.getMobileNo()=="" || request.getName()=="" || request.getPosition()==""){
+                webResponse.setError("Incomplete information");
+                webResponse.setMessage("Failed to edit the information");
+                webResponse.setStatus(ActivityStatus.FAILED);
+                return webResponse;
+            }
+
+            UserEntity userNewInfo = userRepository.findById(id)
+                                            .orElseThrow(() -> new Exception("User not found"));
+            userNewInfo = modelMapper.map(request, UserEntity.class);
+            userRepository.save(userNewInfo);
+
+            webResponse.setMessage("User information is edited successfully");
+            webResponse.setError("No error found");
+            webResponse.setStatus(ActivityStatus.SUCCESS);
+
+            return webResponse;
+        } catch(Exception e){
+            System.out.println("Error = " + e.getMessage());
+
+            webResponse.setMessage("Failed to edit the information");
+            webResponse.setError(e.getMessage());
+            webResponse.setStatus(ActivityStatus.ERROR);
 
             return webResponse;
         }

@@ -33,13 +33,12 @@ export function AddInfo(){
               })
                  .then(response => response.json())
                  .then((json) => {
-                    if(json!==null){
-                        console.log(json);
+                    if(json.status === "SUCCESS"){
                         alert("Data saved successfully");
                         setNewUser({"name":"", "address":"", "mobileNo":"", "position":""})
                         sessionStorage.setItem('newUser', JSON.stringify({"name":"", "address":"", "mobileNo":"", "position":""}))
                         const users = JSON.parse(sessionStorage.getItem('users'));
-                        users.push(json);
+                        users.push(json.response);
                         sessionStorage.setItem('users', JSON.stringify(users));
                     }
                     else{
