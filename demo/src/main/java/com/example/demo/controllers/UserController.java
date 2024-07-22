@@ -72,7 +72,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/addUserInfo")
+    @PostMapping("/user")
     @ResponseBody
     public ResponseEntity<WebResponse> addUserInfo(@RequestBody SaveUserInfoRequestDto practiceCrudRequestDto, @CookieValue(value = "addUserButtonClickCountBackend", defaultValue = "0") String cookieValue, HttpServletResponse responseCookie){
         int clickCount = Integer.parseInt(cookieValue)+1;
@@ -97,10 +97,10 @@ public class UserController {
         
     }
 
-    @DeleteMapping("/deleteUserInfo/{id}")
+    @DeleteMapping("/user/{id}")
     @ResponseBody
     public ResponseEntity<WebResponse> deleteUser(@PathVariable Long id){
-        WebResponse webResponse = userService.deleteUser(id);
+        WebResponse webResponse = userService.deleteUserById(id);
         
         switch (webResponse.getStatus()) {
             case SUCCESS:
@@ -117,14 +117,14 @@ public class UserController {
         }
     }
 
-    @PutMapping("/editUserInfo/{id}")
+    @PutMapping("/user/{id}")
     @ResponseBody
     public ResponseEntity<WebResponse> editUserInfoByUserId(@PathVariable Long id, @RequestBody EditUserInfoRequestDto editUserInfoRequestDto, @CookieValue(value = "editUserButtonClickCountBackend", defaultValue = "0") String cookieValue, HttpServletResponse responseCookie){
         int clickCount = Integer.parseInt(cookieValue)+1;
         Cookie updateCookie = new Cookie("editUserButtonClickCountBackend", String.valueOf(clickCount));
         responseCookie.addCookie(updateCookie);
         
-        WebResponse webResponse = userService.deleteUser(id);
+        WebResponse webResponse = userService.editUserInfoByUserId(id, editUserInfoRequestDto);
         
         switch (webResponse.getStatus()) {
             case SUCCESS:

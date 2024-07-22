@@ -23,7 +23,7 @@ export function AddInfo(){
             alert("Data is incompleted");
         }
         else{
-            fetch('http://localhost:8080/practiceCrud/addUserInfo', {
+            fetch('http://localhost:8080/practiceCrud/user', {
                 method: 'POST',
                 body: JSON.stringify(newUser),
                 headers: {

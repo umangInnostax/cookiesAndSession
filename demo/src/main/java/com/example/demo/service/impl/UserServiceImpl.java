@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public WebResponse deleteUser(Long id) {
+    public WebResponse deleteUserById(Long id) {
         WebResponse webResponse = new WebResponse();
         try{
             if(userRepository.findById(id).isEmpty()){

@@ -8,7 +8,7 @@ export function Home(){
     const [userInfo, setUserInfo] = useState(JSON.parse(sessionStorage.getItem('users')));
 
     const deleteData =async (user) =>{
-        await fetch(`http://localhost:8080/practiceCrud/deleteUserInfo/${user.userId}`, {
+        await fetch(`http://localhost:8080/practiceCrud/user/${user.userId}`, {
             method: 'DELETE',
           })
              .then((response) => response.json())

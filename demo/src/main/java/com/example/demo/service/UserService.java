@@ -8,6 +8,6 @@ public interface UserService {
     public WebResponse getAllUserInfo();
     public WebResponse getUserInfoById(Long id);
     public WebResponse addUserInfo(SaveUserInfoRequestDto request);
-    public WebResponse deleteUser(Long id);
+    public WebResponse deleteUserById(Long id);
     public WebResponse editUserInfoByUserId(Long id, EditUserInfoRequestDto request);
 }
