@@ -14,7 +14,7 @@ const [, setCookie] = useCookies(['addUserButtonClickCountFrontend']);
 
   useEffect(() => {
     async function fetchData() {
-      await fetch('http://localhost:8080/practiceCrud/getInfo', {
+      await fetch('http://localhost:8080/practiceCrud/users', {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include' // Include cookies
@@ -22,7 +22,7 @@ const [, setCookie] = useCookies(['addUserButtonClickCountFrontend']);
       .then(response => response.json())
       .then(json =>{
         // console.log(getCookie("addUserButtonClickCount"));
-        sessionStorage.setItem('users', JSON.stringify(json));
+        sessionStorage.setItem('users', JSON.stringify(json.response));
         sessionStorage.setItem('newUser', JSON.stringify({name:"", address:"", position:"", mobileNo:""}))
         sessionStorage.setItem('editUser', JSON.stringify({userId:-1, name:"", address:"", position:"", mobileNo:""}))
         setCookie('addUserButtonClickCountFrontend', 0, { path: '/' });

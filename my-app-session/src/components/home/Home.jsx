@@ -53,7 +53,7 @@ export function Home(){
             </tr>
             </thead>
             <tbody>
-            {userInfo.length?<>
+            {userInfo!==null ?<>
             {userInfo.map((user, index)=>(
                 <tr key={user.userId}>
                     <td>{index+1}</td>

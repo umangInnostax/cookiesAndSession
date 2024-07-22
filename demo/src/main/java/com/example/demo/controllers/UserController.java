@@ -1,9 +1,10 @@
 package com.example.demo.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -20,8 +21,10 @@ import com.example.demo.RequestDto.EditUserInfoRequestDto;
 import com.example.demo.RequestDto.SaveUserInfoRequestDto;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.enums.ActivityStatus;
+import com.example.demo.handlers.WebResponse;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.response.GetUserInfoResponseDto;
+import com.example.demo.service.UserService;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,35 +38,46 @@ public class UserController {
     private UserRepository userRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private ModelMapper modelMapper;
 
-    @GetMapping("/getInfo")
+    @GetMapping("/users")
     @ResponseBody
-    public List<GetUserInfoResponseDto> getAllUserInfo(){
+    public ResponseEntity<WebResponse> getAllUserInfo(){
 
-        List<GetUserInfoResponseDto> responseDto = new ArrayList<GetUserInfoResponseDto>();
-        List<UserEntity> requests =  (List<UserEntity>) userRepository.findAll();
-        for(UserEntity request:requests){
-            GetUserInfoResponseDto userResponse = modelMapper.map(request, GetUserInfoResponseDto.class);
-            responseDto.add(userResponse);
+        WebResponse webResponse = userService.getAllUserInfo();
+
+        switch (webResponse.getStatus()) {
+            case SUCCESS:
+                return new ResponseEntity<WebResponse>(webResponse, HttpStatus.CREATED);
+
+            case ERROR:
+                return new ResponseEntity<WebResponse>(webResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+
+            default:
+                return new ResponseEntity<WebResponse>(webResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        return responseDto;
     }
 
-    @GetMapping("/getInfo/{id}")
+    @GetMapping("/user/{id}")
     @ResponseBody
-    public GetUserInfoResponseDto getUserInfoId(@PathVariable Long id){
-        try{
-            UserEntity response = userRepository.findById(id)
-                                                .orElseThrow(()-> new Exception("User not found with id: "+id));
-                                
-            GetUserInfoResponseDto responseDto = modelMapper.map(response, GetUserInfoResponseDto.class);
+    public ResponseEntity<WebResponse> getUserInfoById(@PathVariable Long id){
+        WebResponse webResponse = userService.getUserInfoById(id);
 
-            return responseDto;
-        } catch(Exception e){
-            System.out.println("Error message: "+e.getMessage());
-            return null;
+        switch (webResponse.getStatus()) {
+            case SUCCESS:
+                return new ResponseEntity<WebResponse>(webResponse, HttpStatus.OK);
+
+            case FAILED:
+            return new ResponseEntity<WebResponse>(webResponse, HttpStatus.NOT_FOUND);
+
+            case ERROR:
+                return new ResponseEntity<WebResponse>(webResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+
+            default:
+                return new ResponseEntity<WebResponse>(webResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
