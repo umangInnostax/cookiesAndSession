@@ -34,6 +34,10 @@ export function Home(){
         
     }
 
+    const editClickButton = (user) => {
+        sessionStorage.setItem('editUser', JSON.stringify(user));
+    }
+
     return(
         <>
         <table>
@@ -49,7 +53,7 @@ export function Home(){
             </tr>
             </thead>
             <tbody>
-            {userInfo?<>
+            {userInfo.length?<>
             {userInfo.map((user, index)=>(
                 <tr key={user.userId}>
                     <td>{index+1}</td>
@@ -58,7 +62,7 @@ export function Home(){
                     <td>{user.mobileNo}</td>
                     <td>{user.position}</td>
                     <td><Link onClick={()=>{deleteData(user)}}>D</Link></td>
-                    <td key={index}><Link to={"/"} onClick={()=>{console.log(typeof(userInfo))}}>E</Link></td>
+                    <td key={index}><Link to={"/editUser"} onClick={()=>{editClickButton(user)}}>E</Link></td>
                 </tr>
             ))}</>:<></>}
 

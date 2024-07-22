@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useCookies } from "react-cookie";
 import "./AddInfo.css"
 import { Link } from "react-router-dom";
 
@@ -6,16 +7,14 @@ export function AddInfo(){
 
     //dispatch is use if we have to send some data.
     const [newUser, setNewUser] = useState(JSON.parse(sessionStorage.getItem("newUser")));
-
+    const [cookies, setCookie] = useCookies(['addUserButtonClickCountFrontend']);
     useEffect(()=>{
         sessionStorage.setItem('newUser', JSON.stringify(newUser));
     },[newUser])
 
     const updateValue = (value) => {
-
         const updatedValue = {...newUser, ...value}
         setNewUser(updatedValue);
-        // sessionStorage.setItem('newUser', JSON.stringify(updatedValue))
     }
 
     const onSubmit = (event) => {
@@ -30,10 +29,12 @@ export function AddInfo(){
                 headers: {
                   'Content-type': 'application/json; charset=UTF-8',
                 },
+                credentials: 'include'
               })
                  .then(response => response.json())
                  .then((json) => {
-                    if(json){
+                    if(json!==null){
+                        console.log(json);
                         alert("Data saved successfully");
                         setNewUser({"name":"", "address":"", "mobileNo":"", "position":""})
                         sessionStorage.setItem('newUser', JSON.stringify({"name":"", "address":"", "mobileNo":"", "position":""}))
@@ -51,6 +52,8 @@ export function AddInfo(){
                     return;
                  });            
         }
+        const count = cookies.addUserButtonClickCountFrontend;
+        setCookie('addUserButtonClickCountFrontend', count+1, { path: '/' });
     }
     return(
         <>

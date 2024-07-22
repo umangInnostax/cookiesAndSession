@@ -2,7 +2,6 @@ package com.example.demo.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,9 +25,10 @@ import com.example.demo.response.GetUserInfoResponseDto;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+// import lombok.launch.PatchFixesHider.Val;
 
 @Controller
-@CrossOrigin("http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RequestMapping(path = "/practiceCrud")
 public class UserController {
     @Autowired
@@ -39,17 +39,15 @@ public class UserController {
 
     @GetMapping("/getInfo")
     @ResponseBody
-    public List<GetUserInfoResponseDto> getAllUserInfo(HttpServletResponse response){
-        System.out.println("Response previous => "+response);
+    public List<GetUserInfoResponseDto> getAllUserInfo(){
+
         List<GetUserInfoResponseDto> responseDto = new ArrayList<GetUserInfoResponseDto>();
         List<UserEntity> requests =  (List<UserEntity>) userRepository.findAll();
         for(UserEntity request:requests){
             GetUserInfoResponseDto userResponse = modelMapper.map(request, GetUserInfoResponseDto.class);
             responseDto.add(userResponse);
         }
-        Cookie cookie = new Cookie("addUserButtonClickCount", "0");
-        response.addCookie(cookie);
-        System.out.println("Response later => "+response);
+
         return responseDto;
     }
 
@@ -71,18 +69,15 @@ public class UserController {
 
     @PostMapping("/addUserInfo")
     @ResponseBody
-    public GetUserInfoResponseDto addUserInfo(@RequestBody SaveUserInfoRequestDto practiceCrudRequestDto, @CookieValue(value = "addUserButtonClickCount", defaultValue = "4") String cookie){
+    public GetUserInfoResponseDto addUserInfo(@RequestBody SaveUserInfoRequestDto practiceCrudRequestDto, @CookieValue(value = "addUserButtonClickCountBackend", defaultValue = "0") String cookieValue, HttpServletResponse responseCookie){
         try{
             UserEntity practiceEntity = modelMapper.map(practiceCrudRequestDto, UserEntity.class);
             UserEntity userEntity =  userRepository.save(practiceEntity);
             GetUserInfoResponseDto responseDto = modelMapper.map(userEntity, GetUserInfoResponseDto.class);
-            if(cookie.equals("4")){
-                System.out.println("4");
-            }
-            else{
-                System.out.println("cookie = 0: "+cookie);
-            }
-            // Cookie cookie[] = request.getCookies();
+            
+            int clickCount = Integer.parseInt(cookieValue)+1;
+            Cookie updateCookie = new Cookie("addUserButtonClickCountBackend", String.valueOf(clickCount));
+            responseCookie.addCookie(updateCookie);
 
             return responseDto;
         } catch(Exception e){
@@ -108,7 +103,7 @@ public class UserController {
 
     @PutMapping("/editUserInfo/{id}")
     @ResponseBody
-    public ActivityStatus editUserInfoByUserId(@PathVariable Long id, @RequestBody EditUserInfoRequestDto editUserInfoRequestDto){
+    public ActivityStatus editUserInfoByUserId(@PathVariable Long id, @RequestBody EditUserInfoRequestDto editUserInfoRequestDto, @CookieValue(value = "editUserButtonClickCountBackend", defaultValue = "0") String cookieValue, HttpServletResponse responseCookie){
         try{
             UserEntity userNewInfo = userRepository.findById(id)
                                         .orElseThrow(()-> new Exception("User not found with id: "+id));
@@ -116,9 +111,13 @@ public class UserController {
             userNewInfo = modelMapper.map(editUserInfoRequestDto, UserEntity.class);
             userRepository.save(userNewInfo);
 
+            int clickCount = Integer.parseInt(cookieValue)+1;
+            Cookie updateCookie = new Cookie("editUserButtonClickCountBackend", String.valueOf(clickCount));
+            responseCookie.addCookie(updateCookie);
+
             return ActivityStatus.SUCCESS;
         } catch(Exception e){
-            System.out.println(e.getMessage());
+            System.out.println("Error = " + e.getMessage());
             return ActivityStatus.ERROR;
         }
     }
